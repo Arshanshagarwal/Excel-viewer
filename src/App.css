@@ -1,0 +1,94 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  font-family: "Roboto", sans-serif;
+}
+
+.container {
+  height: 100vh;
+  width: 100vw;
+}
+
+.file-input {
+  height: inherit;
+  width: inherit;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.input-button {
+  display: none;
+}
+
+.custom-file-upload {
+  border: 2px solid black;
+  width: 200px;
+  height: 80px;
+  padding: 5px 10px 5px 10px;
+  cursor: pointer;
+  color: black;
+  text-align: center;
+  font-size: 24px;
+  border-radius: 3px;
+}
+
+.custom-file-upload:hover {
+  color: white;
+  background-color: black;
+}
+
+.filename {
+  margin-top: 20px;
+}
+
+.submit-btn {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  margin-top: 20px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: white;
+  border: 2px solid #007bff;
+  color: #007bff;
+  margin-top: 20px;
+  height: 30px;
+}
+
+.data-input-container {
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.data-item {
+  /* background-color: red; */
+  border: 1px solid black;
+  margin: 0;
+  padding: 0 20px 0 20px;
+}
+
+.data-row {
+  margin-top: 20px;
+}
+
+.null-Value {
+  background-color: #ff7f7f;
+}
+
+.heading-item {
+  background-color: yellow;
+}
