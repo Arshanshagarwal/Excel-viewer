@@ -7,7 +7,7 @@
 
 body {
   width: 100vw;
-  height: 100vh;
+  /* height: 100vh; */
   font-family: "Roboto", sans-serif;
 }
 
@@ -68,8 +68,10 @@ body {
 }
 
 .data-input-container {
-  height: 100px;
+  /* height: 100px; */
   display: flex;
+  margin-top: 30px;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -91,4 +93,42 @@ body {
 
 .heading-item {
   background-color: yellow;
+}
+
+.form-inline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.form-group {
+  height: 45px;
+}
+
+.functional-btn-container {
+  margin-top: 10px;
+}
+
+.functional-btn {
+  margin: 0 4px 0 4px;
+  border: 2px solid black;
+  background-color: transparent;
+  padding: 5px 10px 5px 10px;
+  cursor: pointer;
+  color: black;
+  text-align: center;
+  border-radius: 3px;
+}
+.functional-btn:hover {
+  background-color: black;
+  color: white;
+}
+
+.table-container {
+  margin-top: 30px;
+}
+
+.editable-cell {
+  background-color: transparent;
+  width: max-content;
+  border: none;
 }

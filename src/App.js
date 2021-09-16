@@ -10,10 +10,19 @@ export default class App extends React.Component {
     this.state = {
       data: [],
       cols: [],
+      tempData: [],
+      isFileSelected: false,
+      name: undefined,
+      edit: false,
+      null: [],
     };
 
     this.handleFile = this.handleFile.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.ascending = this.ascending.bind(this);
+    this.descending = this.descending.bind(this);
+    this.onEdit = this.onEdit.bind(this);
+    // this.getNullValues = this.getNullValues.bind(this);
   }
 
   handleFile(file) {
@@ -21,6 +30,7 @@ export default class App extends React.Component {
     const rABS = !!reader.readAsBinaryString;
     reader.onload = (e) => {
       const bstr = e.target.result;
+
       const wb = XLSX.read(bstr, { type: rABS ? "binary" : "array" });
 
       const wsname = wb.SheetNames[0];
@@ -28,16 +38,66 @@ export default class App extends React.Component {
 
       const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
 
-      this.setState({ data: data, cols: make_cols(ws["!ref"]) });
+      var nullArray = new Array(make_cols(ws["!ref"]).length).fill(0);
+
+      this.setState({
+        data: data,
+        cols: make_cols(ws["!ref"]),
+        tempData: data,
+        null: nullArray,
+        isFileSelected: true,
+        name: file.name,
+      });
+      //  adding the data_type row (array)
+
+      let dataType = [];
+      this.state.tempData[1].forEach((element) => {
+        console.log(element);
+        dataType.push(element ? typeof element : " ");
+      });
+      this.state.tempData.splice(1, 0, dataType);
+      console.log(this.state.tempData);
+
+      this.setState({ data: this.state.tempData });
     };
     if (rABS) reader.readAsBinaryString(file);
     else reader.readAsArrayBuffer(file);
+    // this.getNullValues();
   }
 
   handleChange(e) {
     const files = e.target.files;
     if (files && files[0]) this.handleFile(files[0]);
   }
+
+  ascending() {
+    let temp = this.state.data;
+    let head = temp[0];
+    let dT = temp[1];
+    temp = temp.slice(2);
+    temp.sort().splice(0, 0, head, dT);
+    this.setState({ data: temp });
+  }
+  descending() {
+    let temp = this.state.data;
+    let head = temp[0];
+    let dT = temp[1];
+    temp = temp.slice(2);
+    temp.sort().reverse().splice(0, 0, head, dT);
+    this.setState({ data: temp });
+  }
+
+  onEdit(ind, i, e) {
+    this.state.data[ind][i] = e.target.value;
+  }
+
+  // getNullValues() {
+  //   let col = this.state.data.length;
+  //   // let row = this.state.data[0].length;
+  //   console.log(this.state.data[0].length);
+
+  //   // console.log(col + row);
+  // }
 
   render() {
     return (
@@ -56,39 +116,80 @@ export default class App extends React.Component {
                 onChange={this.handleChange}
               />
             </div>
+            <label>
+              {this.state.name ? this.state.name : "Drag and Drop/ Upload File"}
+            </label>
           </form>
+          <div className="functional-btn-container">
+            {this.state.isFileSelected ? (
+              <>
+                <button onClick={this.ascending} className="functional-btn">
+                  Ascending Order
+                </button>
+
+                <button
+                  onClick={() => this.setState({ data: this.state.tempData })}
+                  className="functional-btn"
+                >
+                  Original Order
+                </button>
+                <button onClick={this.descending} className="functional-btn">
+                  Descending Order
+                </button>
+                <button
+                  onClick={() => this.setState({ edit: !this.state.edit })}
+                  className="functional-btn"
+                >
+                  {this.state.edit ? "Normal Mode" : "Edit Mode"}
+                </button>
+              </>
+            ) : undefined}
+          </div>
         </div>
 
-        <div className="row">
+        <div className="row table-container">
           <div className="col-xs-12">
             <div className="table-responsive">
               <table className="table table-striped">
                 <thead>
+                  {console.log(this.state.data)}
                   <tr>
                     {this.state.cols.map((c) => (
-                      <th key={c.key}>{c.name}</th>
+                      <th key={c.key} className="data-item">
+                        {c.name}
+                        {console.log(this.state.null)}
+                      </th>
                     ))}
                   </tr>
                 </thead>
-
+                {console.log(this.state.null)}
                 <tbody>
-                  {this.state.data.map((r, i) => (
+                  {this.state.data.map((r, ind) => (
                     <tr
-                      key={i}
+                      key={ind}
                       className={`data-row + + ${
-                        i === 0 ? "heading-item" : ""
+                        ind === 0 ? "heading-item" : ""
                       }`}
                     >
-                      {/* {console.log(r)} */}
                       {this.state.cols.map((c, i) => (
                         <td
                           key={c.key}
                           className={`data-item ${
-                            r[c.key] == null ? "null-Value" : ""
+                            r[c.key] == null || r[c.key] == ""
+                              ? "null-Value"
+                              : ""
                           } `}
                         >
-                          {console.log(c)}
-                          {r[c.key]}
+                          {this.state.edit ? (
+                            <input
+                              type="text"
+                              className="editable-cell"
+                              defaultValue={r[c.key]}
+                              onChange={(evt) => this.onEdit(ind, i, evt)}
+                            />
+                          ) : (
+                            <div>{r[c.key]}</div>
+                          )}
                         </td>
                       ))}
                     </tr>
