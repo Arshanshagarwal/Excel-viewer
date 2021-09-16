@@ -88,7 +88,9 @@ export default class App extends React.Component {
   }
 
   onEdit(ind, i, e) {
-    this.state.data[ind][i] = e.target.value;
+    let temp = this.state.data;
+    temp[ind][i] = e.target.value;
+    this.setState({ data: temp });
   }
 
   // getNullValues() {
@@ -175,7 +177,7 @@ export default class App extends React.Component {
                         <td
                           key={c.key}
                           className={`data-item ${
-                            r[c.key] == null || r[c.key] == ""
+                            r[c.key] === undefined || r[c.key] === ""
                               ? "null-Value"
                               : ""
                           } `}
