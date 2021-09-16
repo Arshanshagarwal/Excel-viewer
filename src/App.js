@@ -22,7 +22,6 @@ export default class App extends React.Component {
     this.ascending = this.ascending.bind(this);
     this.descending = this.descending.bind(this);
     this.onEdit = this.onEdit.bind(this);
-    // this.getNullValues = this.getNullValues.bind(this);
   }
 
   handleFile(file) {
@@ -30,16 +29,12 @@ export default class App extends React.Component {
     const rABS = !!reader.readAsBinaryString;
     reader.onload = (e) => {
       const bstr = e.target.result;
-
       const wb = XLSX.read(bstr, { type: rABS ? "binary" : "array" });
-
       const wsname = wb.SheetNames[0];
       const ws = wb.Sheets[wsname];
-
       const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
-
       var nullArray = new Array(make_cols(ws["!ref"]).length).fill(0);
-
+      let dataType = [];
       this.setState({
         data: data,
         cols: make_cols(ws["!ref"]),
@@ -48,21 +43,15 @@ export default class App extends React.Component {
         isFileSelected: true,
         name: file.name,
       });
-      //  adding the data_type row (array)
 
-      let dataType = [];
       this.state.tempData[1].forEach((element) => {
-        console.log(element);
         dataType.push(element ? typeof element : " ");
       });
       this.state.tempData.splice(1, 0, dataType);
-      console.log(this.state.tempData);
-
       this.setState({ data: this.state.tempData });
     };
     if (rABS) reader.readAsBinaryString(file);
     else reader.readAsArrayBuffer(file);
-    // this.getNullValues();
   }
 
   handleChange(e) {
@@ -93,18 +82,11 @@ export default class App extends React.Component {
     this.setState({ data: temp });
   }
 
-  // getNullValues() {
-  //   let col = this.state.data.length;
-  //   // let row = this.state.data[0].length;
-  //   console.log(this.state.data[0].length);
-
-  //   // console.log(col + row);
-  // }
-
   render() {
     return (
       <DragDropFile handleFile={this.handleFile}>
         <div className="row data-input-container">
+          <div className="project-title">𝙳𝚘𝚙𝚎𝚛𝚊𝚝𝚘𝚛</div>
           <form className="form-inline">
             <div className="form-group">
               <label htmlFor="file" className="custom-file-upload">
@@ -150,56 +132,53 @@ export default class App extends React.Component {
         </div>
 
         <div className="row table-container">
-          <div className="col-xs-12">
-            <div className="table-responsive">
-              <table className="table table-striped">
-                <thead>
-                  {console.log(this.state.data)}
-                  <tr>
-                    {this.state.cols.map((c) => (
-                      <th key={c.key} className="data-item">
-                        {c.name}
-                        {console.log(this.state.null)}
-                      </th>
+          {/* <div className=""> */}
+          <div className="table-responsive">
+            <table className="table table-striped">
+              <thead>
+                <tr>
+                  {this.state.cols.map((c) => (
+                    <th key={c.key} className="data-item">
+                      {c.name}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {this.state.data.map((r, ind) => (
+                  <tr
+                    key={ind}
+                    className={`data-row + + ${
+                      ind === 0 ? "heading-item" : ""
+                    }`}
+                  >
+                    {this.state.cols.map((c, i) => (
+                      <td
+                        key={c.key}
+                        className={`data-item ${
+                          r[c.key] === undefined || r[c.key] === ""
+                            ? "null-Value"
+                            : ""
+                        } `}
+                      >
+                        {this.state.edit ? (
+                          <input
+                            type="text"
+                            className="editable-cell"
+                            defaultValue={r[c.key]}
+                            onChange={(evt) => this.onEdit(ind, i, evt)}
+                          />
+                        ) : (
+                          <div>{r[c.key]}</div>
+                        )}
+                      </td>
                     ))}
                   </tr>
-                </thead>
-                {console.log(this.state.null)}
-                <tbody>
-                  {this.state.data.map((r, ind) => (
-                    <tr
-                      key={ind}
-                      className={`data-row + + ${
-                        ind === 0 ? "heading-item" : ""
-                      }`}
-                    >
-                      {this.state.cols.map((c, i) => (
-                        <td
-                          key={c.key}
-                          className={`data-item ${
-                            r[c.key] === undefined || r[c.key] === ""
-                              ? "null-Value"
-                              : ""
-                          } `}
-                        >
-                          {this.state.edit ? (
-                            <input
-                              type="text"
-                              className="editable-cell"
-                              defaultValue={r[c.key]}
-                              onChange={(evt) => this.onEdit(ind, i, evt)}
-                            />
-                          ) : (
-                            <div>{r[c.key]}</div>
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
+          {/* </div> */}
         </div>
       </DragDropFile>
     );
