@@ -112,7 +112,10 @@ export default class App extends React.Component {
     return (
       <DragDropFile handleFile={this.handleFile}>
         <div className="row data-input-container">
-          <div className="project-title">𝙳𝚘𝚙𝚎𝚛𝚊𝚝𝚘𝚛</div>
+          <div className="project-title tooltip">
+            𝙳𝚘𝚙𝚎𝚛𝚊𝚝𝚘𝚛
+            <span className="tooltiptext">𝙼𝚊𝚍𝚎 𝚋𝚢 𝙰𝚛𝚜𝚑𝚊𝚗𝚜𝚑</span>
+          </div>
           <form className="form-inline">
             <div className="form-group">
               <label htmlFor="file" className="custom-file-upload">
