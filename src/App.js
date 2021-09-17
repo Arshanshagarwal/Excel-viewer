@@ -45,7 +45,7 @@ export default class App extends React.Component {
         name: file.name,
         searchWord: "",
       });
-      this.state.tempData[1].forEach((element) => {
+      this.state.tempData[2].forEach((element) => {
         dataType.push(element ? typeof element : " ");
       });
 
