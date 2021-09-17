@@ -22,6 +22,7 @@ export default class App extends React.Component {
     this.ascending = this.ascending.bind(this);
     this.descending = this.descending.bind(this);
     this.onEdit = this.onEdit.bind(this);
+    this.nullValue = this.nullValue.bind(this);
   }
 
   handleFile(file) {
@@ -42,13 +43,15 @@ export default class App extends React.Component {
         null: nullArray,
         isFileSelected: true,
         name: file.name,
+        searchWord: "",
       });
-
       this.state.tempData[1].forEach((element) => {
         dataType.push(element ? typeof element : " ");
       });
-      this.state.tempData.splice(1, 0, dataType);
+
+      this.state.tempData.splice(1, 0, dataType, this.state.null);
       this.setState({ data: this.state.tempData });
+      this.nullValue();
     };
     if (rABS) reader.readAsBinaryString(file);
     else reader.readAsArrayBuffer(file);
@@ -63,16 +66,18 @@ export default class App extends React.Component {
     let temp = this.state.data;
     let head = temp[0];
     let dT = temp[1];
-    temp = temp.slice(2);
-    temp.sort().splice(0, 0, head, dT);
+    let nul = temp[2];
+    temp = temp.slice(3);
+    temp.sort().splice(0, 0, head, dT, nul);
     this.setState({ data: temp });
   }
   descending() {
     let temp = this.state.data;
     let head = temp[0];
     let dT = temp[1];
-    temp = temp.slice(2);
-    temp.sort().reverse().splice(0, 0, head, dT);
+    let nul = temp[2];
+    temp = temp.slice(3);
+    temp.sort().reverse().splice(0, 0, head, dT, nul);
     this.setState({ data: temp });
   }
 
@@ -80,6 +85,27 @@ export default class App extends React.Component {
     let temp = this.state.data;
     temp[ind][i] = e.target.value;
     this.setState({ data: temp });
+  }
+
+  nullValue() {
+    var nullArray = new Array(this.state.cols.length).fill(0);
+    this.state.cols.forEach((c, i) =>
+      this.state.data.forEach((r, ind) => {
+        if (r[c.key] === undefined || r[c.key] === "" || r[c.key] == null) {
+          let temp = nullArray;
+          temp[i]++;
+          this.setState({ null: nullArray });
+        }
+      })
+    );
+
+    let temp = this.state.null;
+    temp.forEach((v, i) => {
+      temp[i] = temp[i] + " Null Values";
+    });
+    this.setState({ null: temp });
+    this.state.tempData.splice(2, 1, this.state.null);
+    this.setState({ data: this.state.tempData });
   }
 
   render() {
@@ -132,7 +158,6 @@ export default class App extends React.Component {
         </div>
 
         <div className="row table-container">
-          {/* <div className=""> */}
           <div className="table-responsive">
             <table className="table table-striped">
               <thead>
@@ -148,9 +173,7 @@ export default class App extends React.Component {
                 {this.state.data.map((r, ind) => (
                   <tr
                     key={ind}
-                    className={`data-row + + ${
-                      ind === 0 ? "heading-item" : ""
-                    }`}
+                    className={`data-row + ${ind === 0 ? "heading-item" : ""} `}
                   >
                     {this.state.cols.map((c, i) => (
                       <td
@@ -161,7 +184,7 @@ export default class App extends React.Component {
                             : ""
                         } `}
                       >
-                        {this.state.edit ? (
+                        {this.state.edit && ind !== 2 ? (
                           <input
                             type="text"
                             className="editable-cell"
@@ -178,7 +201,6 @@ export default class App extends React.Component {
               </tbody>
             </table>
           </div>
-          {/* </div> */}
         </div>
       </DragDropFile>
     );
